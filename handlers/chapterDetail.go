@@ -66,11 +66,20 @@ func ChapterDetailHandler(c *gin.Context) {
 		return
 	}
 
+	// Read quiz.yaml
+	quizFile := filepath.Join("./courses", courseFolder, chapterFolder, "quiz.yaml")
+	var quiz []models.QuizData
+	if err := utils.ReadYAML(quizFile, &quiz); err != nil {
+		// If quiz file doesn't exist or can't be read, use an empty slice
+		quiz = []models.QuizData{}
+	}
+
 	// Respond ✨
 	c.JSON(http.StatusOK, gin.H{
 		"course":        courseName,
 		"chapter_id":    chapterID,
 		"chapter_title": chapterTitle,
 		"sections":      sections,
+		"quiz":          quiz,
 	})
 }

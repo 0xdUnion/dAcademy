@@ -16,4 +16,11 @@ type CourseData struct {
 type SectionData struct {
 	Type string `yaml:"type" json:"type"`
 	Text string `yaml:"text" json:"text"`
+	Quiz []int  `yaml:"quiz" json:"quiz"`
+}
+type QuizData struct {
+	ID     int      `yaml:"id" json:"id"`
+	Type   string   `yaml:"type" json:"type"`
+	Text   string   `yaml:"text" json:"text"`
+	Answer []string `yaml:"answer" json:"answer"`
 }
