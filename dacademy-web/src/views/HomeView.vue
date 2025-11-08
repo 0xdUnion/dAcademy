@@ -35,27 +35,47 @@ onMounted(fetchCourses)
 
 <template>
   <Nav />
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Courses</h1>
-    <button @click="scanCourses">Scan Courses</button>
+  <div class="container mx-auto p-6 space-y-6">
+    <h1 class="text-3xl font-bold text-center text-primary mb-6">Courses</h1>
+    <button
+      @click="scanCourses"
+      class="btn btn-accent"
+    >
+      Scan Courses
+    </button>
 
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">Error: {{ error }}</div>
+    <div v-if="loading" class="text-center text-lg text-gray-500">Loading...</div>
+    <div v-else-if="error" class="text-center text-lg text-red-500">Error: {{ error }}</div>
 
     <div v-else>
       <div
         v-for="(course, index) in courses"
         :key="index"
+        class="card bg-base-100 shadow-xl p-4 space-y-4"
       >
-        <h2>{{ course.name }}</h2>
-        <p>{{ course.description }}</p>
-        <p>Chapters: {{ course.chapter_count }}</p>
-        <RouterLink :to="`/c/${course.slug}`">Start</RouterLink>
+        <h2 class="text-xl font-semibold text-primary">{{ course.name }}</h2>
+        <p class="text-gray-700">{{ course.description }}</p>
+        <p class="text-sm text-gray-600">Chapters: {{ course.chapter_count }}</p>
+        <RouterLink
+          :to="`/c/${course.slug}`"
+          class="btn btn-primary w-full"
+        >
+          Start Course
+        </RouterLink>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-
+.container {
+  max-width: 800px;
+}
+.card {
+  border-radius: 12px;
+  transition: transform 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
 </style>

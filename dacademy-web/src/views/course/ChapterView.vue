@@ -109,60 +109,67 @@ function nextSection() {
 </script>
 
 <template>
-  <div>
-    <h2>📘 Chapter {{ respond.chapter_id }} : {{ respond.chapter_title }}</h2>
+  <div class="container mx-auto p-6 space-y-6">
+    <h2 class="text-2xl font-semibold text-primary">
+      📘 Chapter {{ respond.chapter_id }} : {{ respond.chapter_title }}
+    </h2>
 
-    <div v-if="loading">Loading...</div>
+    <div v-if="loading" class="text-center text-lg text-gray-500">Loading...</div>
 
     <div v-else>
       <div v-if="!finished">
         <div v-if="sections.length">
           <div v-if="sections[current].type === 'text'">
-            <p>{{ sections[current].text }}</p>
+            <p class="text-lg text-gray-700">{{ sections[current].text }}</p>
           </div>
 
           <div v-else-if="sections[current].type === 'markdown'">
-            <div v-html="marked.parse(sections[current].text)"></div>
+            <div v-html="marked.parse(sections[current].text)" class="prose"></div>
           </div>
 
           <!-- Quiz UI -->
-          <div v-if="quizActive && currentQuiz">
-            <h3>🧠 Quiz <small>({{ quizIndex + 1 }} / {{ currentQuizList.length }})</small></h3>
-            <p>{{ currentQuiz.text }}</p>
+          <div v-if="quizActive && currentQuiz" class="mt-6">
+            <h3 class="text-xl font-semibold text-primary">
+              🧠 Quiz <small>({{ quizIndex + 1 }} / {{ currentQuizList.length }})</small>
+            </h3>
+            <p class="text-lg mt-2">{{ currentQuiz.text }}</p>
 
-            <div v-if="currentQuiz.type === 'input'">
+            <div v-if="currentQuiz.type === 'input'" class="mt-4 space-y-4">
               <input
                 v-model="userAnswer"
                 placeholder="Your answer..."
                 @keyup.enter="checkQuiz"
-                class="border p-1 rounded"
+                class="input input-bordered w-full"
               />
-              <button @click="checkQuiz">Submit</button>
-              <button @click="revealAnswer">
-                {{ showAnswers ? 'Hide Answers' : '💡 Show Answer' }}
-              </button>
+              <div class="space-x-4">
+                <button @click="checkQuiz" class="btn btn-accent">Submit</button>
+                <button @click="revealAnswer" class="btn btn-ghost">
+                  {{ showAnswers ? 'Hide Answers' : '💡 Show Answer' }}
+                </button>
+              </div>
             </div>
 
             <div v-else>
               <p>Unsupported quiz type: {{ currentQuiz.type }}</p>
-              <button @click="checkQuiz">Mark as done</button>
+              <button @click="checkQuiz" class="btn btn-warning">Mark as done</button>
             </div>
 
-            <div v-if="showAnswers" class="answers">
+            <div v-if="showAnswers" class="answers bg-base-200 p-4 rounded-md mt-4">
               <p>📝 Accepted answers:</p>
               <ul>
                 <li v-for="(ans, i) in currentQuiz.answer" :key="i">{{ ans }}</li>
               </ul>
             </div>
 
-            <p v-if="quizResult">{{ quizResult }}</p>
+            <p v-if="quizResult" class="text-xl font-semibold mt-4">{{ quizResult }}</p>
           </div>
 
           <!-- Controls -->
-          <div v-else>
+          <div v-else class="mt-6">
             <button
               v-if="sections[current].quiz && sections[current].quiz.length"
               @click="startQuiz"
+              class="btn btn-secondary"
             >
               Start Quiz 🧩
             </button>
@@ -170,6 +177,7 @@ function nextSection() {
             <button
               v-else
               @click="nextSection"
+              class="btn btn-primary w-full"
             >
               Next ➡️
             </button>
@@ -180,38 +188,25 @@ function nextSection() {
         </div>
       </div>
 
-      <div v-else>
-        <h3>🎉 Chapter Finished!</h3>
-        <p>Well done, learner!</p>
-        <RouterLink :to="`/c/${courseSlug}`">Back</RouterLink>
+      <div v-else class="text-center">
+        <h3 class="text-3xl font-bold text-green-500">🎉 Chapter Finished!</h3>
+        <p class="text-lg">Well done, learner!</p>
+        <RouterLink :to="`/c/${courseSlug}`" class="btn btn-accent mt-4">
+          Back to Course
+        </RouterLink>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-button {
-  margin-top: 8px;
-  margin-right: 6px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: none;
-  background-color: #222;
-  color: #fff;
-  cursor: pointer;
+.container {
+  max-width: 1024px;
 }
-button:hover {
-  background-color: #444;
-}
+
 .answers {
-  margin-top: 10px;
-  background: #111;
-  padding: 10px;
-  border-radius: 6px;
-  color: white;
-}
-.answers ul {
-  margin: 0;
-  padding-left: 20px;
+  background: #1f2937;
+  color: #fff;
+  border-radius: 8px;
 }
 </style>
