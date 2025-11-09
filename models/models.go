@@ -19,8 +19,9 @@ type SectionData struct {
 	Quiz []int  `yaml:"quiz" json:"quiz"`
 }
 type QuizData struct {
-	ID     int      `yaml:"id" json:"id"`
-	Type   string   `yaml:"type" json:"type"`
-	Text   string   `yaml:"text" json:"text"`
-	Answer []string `yaml:"answer" json:"answer"`
+	ID      int      `yaml:"id" json:"id"`
+	Type    string   `yaml:"type" json:"type"`
+	Text    string   `yaml:"text" json:"text"`
+	Options []string `yaml:"options,omitempty" json:"options,omitempty"`
+	Answer  []string `yaml:"answer" json:"answer"`
 }

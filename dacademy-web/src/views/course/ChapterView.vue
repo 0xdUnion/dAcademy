@@ -88,6 +88,13 @@ function checkQuiz() {
   }
 }
 
+function skipQuiz() {
+  quizResult.value = '➡️ Skipped'
+  setTimeout(() => {
+    loadNextQuizInList()
+  }, 600)
+}
+
 function revealAnswer() {
   showAnswers.value = !showAnswers.value
 }
@@ -134,6 +141,7 @@ function nextSection() {
             </h3>
             <p class="text-lg mt-2">{{ currentQuiz.text }}</p>
 
+            <!-- Input -->
             <div v-if="currentQuiz.type === 'input'" class="mt-4 space-y-4">
               <input
                 v-model="userAnswer"
@@ -149,9 +157,29 @@ function nextSection() {
               </div>
             </div>
 
+            <!-- Single Choose -->
+            <div v-else-if="currentQuiz.type === 'singleChoose'" class="mt-4 space-y-4">
+              <div class="space-x-4">
+                <button
+                  v-for="(opt, i) in currentQuiz.options"
+                  :key="i"
+                  @click="userAnswer = opt"
+                  :class="{'btn btn-primary': userAnswer === opt, 'btn': userAnswer !== opt}"
+                >
+                  {{ opt }}
+                </button>
+              </div>
+              <div class="space-x-4">
+                <button @click="checkQuiz" class="btn btn-accent">Submit</button>
+                <button @click="revealAnswer" class="btn btn-ghost">
+                  {{ showAnswers ? 'Hide Answers' : '💡 Show Answer' }}
+                </button>
+              </div>
+            </div>
+
             <div v-else>
               <p>Unsupported quiz type: {{ currentQuiz.type }}</p>
-              <button @click="checkQuiz" class="btn btn-warning">Mark as done</button>
+              <button @click="skipQuiz" class="btn btn-warning">Mark as done</button>
             </div>
 
             <div v-if="showAnswers" class="answers bg-base-200 p-4 rounded-md mt-4">
