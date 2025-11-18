@@ -1,8 +1,12 @@
 package handlers
 
 import (
+	"dAcademy/database"
 	"dAcademy/models"
 	"dAcademy/utils"
+	"database/sql"
+	"errors"
+	"log"
 	"net/http"
 	"path/filepath"
 
@@ -16,31 +20,39 @@ func CourseDetailHandler(c *gin.Context) {
 		return
 	}
 
-	var courses []models.CourseData
-	if err := utils.ReadYAML("./courses/_courses.yaml", &courses); err != nil {
+	var course models.CourseData
+
+	db, err := database.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = db.Get(&course, `
+        SELECT slug, name, description, tags, folder, chapter_count
+        FROM courses
+        WHERE slug = ?
+        LIMIT 1
+    `, slug)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "course not found"})
+		}
+		c.JSON(http.StatusNotFound, gin.H{"error": err})
+	}
+
+	var chapters []models.ChapterData
+	chaptersFile := filepath.Join("./courses", course.Folder, "_chapters.yaml")
+
+	if err := utils.ReadYAML(chaptersFile, &chapters); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Read and find course by slug
-	for _, course := range courses {
-		if course.Slug == slug {
-			var chapters []models.ChapterData
-			chaptersFile := filepath.Join("./courses", course.Folder, "_chapters.yaml")
+	c.JSON(http.StatusOK, gin.H{
+		"message":  "course found",
+		"course":   course,
+		"chapters": chapters,
+	})
 
-			if err := utils.ReadYAML(chaptersFile, &chapters); err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				return
-			}
-
-			c.JSON(http.StatusOK, gin.H{
-				"message":  "course found",
-				"course":   course,
-				"chapters": chapters,
-			})
-			return
-		}
-	}
-
-	c.JSON(http.StatusNotFound, gin.H{"error": "course not found"})
 }

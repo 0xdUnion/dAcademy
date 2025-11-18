@@ -1,33 +1,30 @@
 package handlers
 
 import (
+	"dAcademy/database"
 	"dAcademy/models"
+	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"gopkg.in/yaml.v3"
 )
 
 func CourseListHandler(c *gin.Context) {
-	yamlPath := "./courses/_courses.yaml"
+	var courses []models.CourseData
 
-	// Read
-	data, err := os.ReadFile(yamlPath)
+	db, err := database.Run()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to read _courses.yaml: " + err.Error(),
-		})
-		return
+		log.Fatal(err)
 	}
 
-	// Parse YAML into struct slice
-	var courses []models.CourseData
-	if err := yaml.Unmarshal(data, &courses); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed to parse YAML: " + err.Error(),
-		})
-		return
+	// Read data from database
+	err = db.Select(&courses, `
+        SELECT slug, name, description, tags, folder, chapter_count
+        FROM courses
+        ORDER BY id ASC
+    `)
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	// Output JSON response

@@ -6,12 +6,13 @@ type ChapterData struct {
 	Folder string `yaml:"folder" json:"folder"`
 }
 type CourseData struct {
-	Name         string   `yaml:"name" json:"name"`
-	Description  string   `yaml:"description" json:"description"`
-	Slug         string   `yaml:"slug" json:"slug"`
-	Tags         []string `yaml:"tags" json:"tags"`
-	Folder       string   `yaml:"folder" json:"folder"`
-	ChapterCount int      `yaml:"chapter_count" json:"chapter_count"`
+	ID           int64       `db:"id" json:"id"`
+	Slug         string      `yaml:"slug" json:"slug" db:"slug"`
+	Name         string      `yaml:"name" json:"name" db:"name"`
+	Description  string      `yaml:"description" json:"description" db:"description"`
+	Tags         StringSlice `yaml:"tags" json:"tags" db:"tags"`
+	Folder       string      `yaml:"folder" json:"folder" db:"folder"`
+	ChapterCount int         `yaml:"chapter_count" json:"chapter_count" db:"chapter_count"`
 }
 type SectionData struct {
 	Type string `yaml:"type" json:"type"`

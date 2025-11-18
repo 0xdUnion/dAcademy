@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"dAcademy/database"
 	"dAcademy/models"
 	"dAcademy/utils"
+	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -14,26 +17,25 @@ func ChapterDetailHandler(c *gin.Context) {
 	courseSlug := c.Param("courseSlug")
 	chapterID := c.Param("chapterID")
 
-	// Read _courses.yaml and find matching course
-	coursesFile := "./courses/_courses.yaml"
-	var courses []models.CourseData
-	if err := utils.ReadYAML(coursesFile, &courses); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("cannot read %s: %v", coursesFile, err)})
-		return
-	}
-	var courseFolder string
-	var courseName string
-	for _, course := range courses {
-		if course.Slug == courseSlug {
-			courseFolder = course.Folder
-			courseName = course.Name
-			break
+	var course models.CourseData
+
+	db, err := database.Run()
+	err = db.Get(&course, `
+        SELECT slug, name, description, tags, folder, chapter_count
+        FROM courses
+        WHERE slug = ?
+        LIMIT 1
+    `, courseSlug)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "course not found"})
 		}
+		c.JSON(http.StatusNotFound, gin.H{"error": err})
 	}
-	if courseFolder == "" {
-		c.JSON(http.StatusNotFound, gin.H{"error": "course not found"})
-		return
-	}
+
+	var courseFolder = course.Folder
+	var courseName = course.Name
 
 	// Read _chapters.yaml in that course folder
 	chaptersFile := filepath.Join("./courses", courseFolder, "_chapters.yaml")

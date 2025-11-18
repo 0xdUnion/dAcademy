@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dAcademy/database"
 	"dAcademy/handlers"
 	"log"
 
@@ -8,6 +9,12 @@ import (
 )
 
 func main() {
+
+	_, err := database.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println("📚 Database ready ✔")
 
 	r := gin.Default()
 	api := r.Group("/api")

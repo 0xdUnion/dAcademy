@@ -17,3 +17,11 @@ func ReadYAML[T any](path string, out *T) error {
 	}
 	return nil
 }
+
+func SaveYAML[T any](file string, data T) error {
+	bytes, err := yaml.Marshal(data)
+	if err != nil {
+		return fmt.Errorf("❌ Failed to marshal YAML: %v", err)
+	}
+	return os.WriteFile(file, bytes, 0644)
+}

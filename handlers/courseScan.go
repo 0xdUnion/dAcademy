@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"dAcademy/database"
 	"dAcademy/models"
+	"dAcademy/utils"
 	"fmt"
 	"io/fs"
 	"log"
@@ -57,7 +59,6 @@ func CourseScanHandler(c *gin.Context) {
 // Scan all(courses and their chapters)
 func scanAll(root string) error {
 	var courses []models.CourseData
-	coursesYaml := filepath.Join(root, "_courses.yaml")
 
 	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -81,7 +82,7 @@ func scanAll(root string) error {
 			}
 
 			if len(chapters) > 0 {
-				if err := saveYamlFile(chaptersYaml, chapters); err != nil {
+				if err := utils.SaveYAML(chaptersYaml, chapters); err != nil {
 					return fmt.Errorf("寫入 _chapters.yaml 失敗: %v", err)
 				}
 			}
@@ -97,7 +98,27 @@ func scanAll(root string) error {
 			}
 			course.ChapterCount = len(chapters)
 			course.Folder = folderName
-			courses = append(courses, course)
+
+			db, err := database.Run()
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			_, err = db.NamedExec(`
+        INSERT INTO courses (slug, name, description, tags, folder, chapter_count)
+        VALUES (:slug, :name, :description, :tags, :folder, :chapter_count)
+        ON CONFLICT(slug) DO UPDATE SET
+            slug = excluded.slug,
+            name = excluded.name,
+            description = excluded.description,
+            tags = excluded.tags,
+            folder = excluded.folder,
+            chapter_count = excluded.chapter_count
+    `, course)
+			if err != nil {
+				log.Fatalf("insert error: %v", err)
+			}
+
 		}
 
 		return nil
@@ -105,10 +126,6 @@ func scanAll(root string) error {
 
 	if err != nil {
 		return fmt.Errorf("掃描課程目錄失敗: %v", err)
-	}
-
-	if err := saveYamlFile(coursesYaml, courses); err != nil {
-		return fmt.Errorf("寫入 _courses.yaml 失敗: %v", err)
 	}
 
 	fmt.Println("✅ Scan finished, total: ", len(courses), " courses")
@@ -144,15 +161,6 @@ func buildChapters(coursePath string) ([]models.ChapterData, error) {
 	// Sort by ID
 	sort.Slice(chapters, func(i, j int) bool { return chapters[i].ID < chapters[j].ID })
 	return chapters, nil
-}
-
-// Save data as yaml
-func saveYamlFile[T any](file string, data T) error {
-	bytes, err := yaml.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("❌ Failed to marshal YAML: %v", err)
-	}
-	return os.WriteFile(file, bytes, 0644)
 }
 
 // Parse chapter folder name, like 1-Hello
