@@ -3,7 +3,6 @@ package database
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -56,8 +55,6 @@ func Run() (*sqlx.DB, error) {
 	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
 		return nil, err
 	}
-
-	log.Println("SQLite migrated successfully 🚀")
 
 	return db, nil
 }

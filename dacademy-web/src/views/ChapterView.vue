@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import Nav from '@/views/components/Nav.vue'
 import axios from 'axios'
 import { Marked } from 'marked'
 import { markedHighlight } from "marked-highlight";
@@ -130,6 +131,7 @@ function nextSection() {
 </script>
 
 <template>
+  <Nav />
   <div class="container mx-auto p-6 space-y-6">
     <h2 class="text-2xl font-semibold text-primary">
       📘 Chapter {{ respond.chapter_id }} : {{ respond.chapter_title }}

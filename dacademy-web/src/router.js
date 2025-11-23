@@ -12,8 +12,13 @@ const router = createRouter({
       },
       {
         path: '/c/:courseSlug(.*)/chapter/:chapterID(.*)',
-        component: () => import('./views/course/ChapterView.vue'),
+        component: () => import('./views/ChapterView.vue'),
       },
+      {
+        path: '/account',
+        component: () => import('./views/AccountView.vue'),
+      },
+
   ],
 })
 

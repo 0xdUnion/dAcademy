@@ -17,6 +17,15 @@ func main() {
 	log.Println("📚 Database ready ✔")
 
 	r := gin.Default()
+	authApi := r.Group("/api/auth")
+	{
+		authApi.POST("/signup", func(c *gin.Context) {
+			handlers.SignupHandler(c)
+		})
+		authApi.POST("/login", func(c *gin.Context) {
+			handlers.LoginHandler(c)
+		})
+	}
 	api := r.Group("/api")
 	{
 		api.GET("/course/list", func(c *gin.Context) {
@@ -30,6 +39,10 @@ func main() {
 		})
 		api.GET("/chapter/:courseSlug/:chapterID", func(c *gin.Context) {
 			handlers.ChapterDetailHandler(c)
+		})
+
+		api.GET("/me", func(c *gin.Context) {
+			handlers.MeHandler(c)
 		})
 
 	}
