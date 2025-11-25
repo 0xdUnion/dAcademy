@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourcePerFileMappings">
-    <file url="file://$PROJECT_DIR$/handlers/courseScan.go" value="fdfc347f-22a8-43b2-9531-75d54c274951" />
+    <file url="file://$PROJECT_DIR$/internal/handlers/courseScan.go" value="fdfc347f-22a8-43b2-9531-75d54c274951" />
   </component>
 </project>

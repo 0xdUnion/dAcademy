@@ -2,7 +2,7 @@ package main
 
 import (
 	"dAcademy/database"
-	"dAcademy/handlers"
+	handlers2 "dAcademy/internal/handlers"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -20,29 +20,29 @@ func main() {
 	authApi := r.Group("/api/auth")
 	{
 		authApi.POST("/signup", func(c *gin.Context) {
-			handlers.SignupHandler(c)
+			handlers2.SignupHandler(c)
 		})
 		authApi.POST("/login", func(c *gin.Context) {
-			handlers.LoginHandler(c)
+			handlers2.LoginHandler(c)
 		})
 	}
 	api := r.Group("/api")
 	{
 		api.GET("/course/list", func(c *gin.Context) {
-			handlers.CourseListHandler(c)
+			handlers2.CourseListHandler(c)
 		})
 		api.GET("/course/scan", func(c *gin.Context) {
-			handlers.CourseScanHandler(c)
+			handlers2.CourseScanHandler(c)
 		})
 		api.GET("/course/:slug", func(c *gin.Context) {
-			handlers.CourseDetailHandler(c)
+			handlers2.CourseDetailHandler(c)
 		})
 		api.GET("/chapter/:courseSlug/:chapterID", func(c *gin.Context) {
-			handlers.ChapterDetailHandler(c)
+			handlers2.ChapterDetailHandler(c)
 		})
 
 		api.GET("/me", func(c *gin.Context) {
-			handlers.MeHandler(c)
+			handlers2.MeHandler(c)
 		})
 
 	}

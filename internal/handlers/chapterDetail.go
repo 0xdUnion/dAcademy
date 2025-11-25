@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"dAcademy/database"
-	"dAcademy/models"
+	"dAcademy/internal/models"
 	"dAcademy/utils"
 	"database/sql"
 	"errors"
